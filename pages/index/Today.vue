@@ -3,10 +3,10 @@ import { onMounted, ref } from 'vue'
 import { useData } from '../../renderer/useData';
 import { getImageBase64FromUrl } from './utils';
 
+const { user } = defineProps(['user'])
+const { theme } = useData()
 let imgs = ref()
 const loading = ref(true)
-const theme = useData()
-const { user } = defineProps(['user'])
 const shouldVote = ref()
 const voting = ref()
 
@@ -37,7 +37,6 @@ async function vote(url) {
 </script>
 
 <template>
-  <h2>Neonpunk Generative Art Mural</h2>
   <h4>Today's Theme: {{theme}}</h4>
 
   <div style="display: flex; flex-wrap: wrap;justify-content: center;padding-left: 10px;">
