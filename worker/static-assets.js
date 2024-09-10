@@ -44,7 +44,6 @@ async function handleStaticAssets(request, env, ctx) {
         return ctx.waitUntil(promise);
       },
     }, options)
-    console.log(page)
 
     // allow headers to be altered
     const response = new Response(page.body, page)
