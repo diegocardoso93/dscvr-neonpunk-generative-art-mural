@@ -1,40 +1,12 @@
-[Cloudflare Workers](https://workers.cloudflare.com/) with:
- - Vite
- - Vike
- - Vue
- - HTML streaming
+# Neonpunk Generative Art Mural
+An embedded app built to DSCVR, powered by DSCVR Canvas and Metaplex.
 
+Tools:
+- Vite, Vike, Vue
+- Cloudflare Pages, Workers, AI, KV
 
-## Docs
+## app
+The `app` base folder.
 
-See [vike.dev/cloudflare-workers](https://vike.dev/cloudflare-workers).
-
-
-## Run
-
-```bash
-git clone git@github.com:vikejs/vike
-cd vike/examples/cloudflare-workers-vue/
-npm install
-```
-
-Develop:
-
-> For increased development speed, we use Vite's development server instead of a worker.
-
-```bash
-npm run dev
-```
-
-Preview the worker locally:
-
-> You'll need to login/create a Cloudflare account.
-
-```bash
-npm run preview
-```
-
-Deploy the worker to Cloudflare:
-```bash
-npm run deploy
-```
+## token-server
+A node.js application to mint NFTs using Metaplex SDK.

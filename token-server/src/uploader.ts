@@ -1,8 +1,4 @@
-import {
-  toMetaplexFile,
-  toMetaplexFileFromJson,
-} from "@metaplex-foundation/js";
-import { Umi } from "@metaplex-foundation/umi";
+import { createGenericFile, Umi } from "@metaplex-foundation/umi";
 
 export class Uploader {
   umi: Umi;
@@ -11,14 +7,19 @@ export class Uploader {
   }
 
   async uploadImage(imageBuffer: Buffer, fileType = "jpeg") {
-    const file = toMetaplexFile(imageBuffer, `asset.${fileType}`);
-    const [imageUri] = await this.umi.uploader.upload([file]);
+    const file = createGenericFile(imageBuffer, `asset.${fileType}`, {
+      tags: [{ name: 'contentType', value: 'image/jpeg' }],
+    });
+    const [imageUri] = await this.umi.uploader.upload([file]).catch((err) => {
+      throw new Error(err)
+    });
     return imageUri;
   }
 
-  async uploadJson(json: any) {
-    const file = toMetaplexFileFromJson(json, "metadata.json");
-    const [assetUri] = await this.umi.uploader.upload([file]);
+  async uploadJson(metadata: any) {
+    const [assetUri] = await this.umi.uploader.uploadJson(metadata).catch((err) => {
+      throw new Error(err)
+    });
     return assetUri;
   }
 }

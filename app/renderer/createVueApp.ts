@@ -5,7 +5,6 @@ import { setPageContext } from './usePageContext'
 import { setData } from './useData'
 import Layout from './Layout.vue'
 import type { PageContext } from 'vike/types'
-import { objectAssign } from './utils'
 
 function createVueApp(pageContext: PageContext) {
   const pageContextRef = shallowRef(pageContext)
@@ -18,7 +17,7 @@ function createVueApp(pageContext: PageContext) {
   setData(app, dataRef)
 
   // app.changePage() is called upon navigation, see +onRenderClient.ts
-  objectAssign(app, {
+  Object.assign(app, {
     changePage: (pageContext: PageContext) => {
       pageContextRef.value = pageContext
       dataRef.value = pageContext.data

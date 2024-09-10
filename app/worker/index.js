@@ -6,7 +6,7 @@ export default {
   async fetch(request, env, ctx) {
     return handleFetchEvent(request, env, ctx)
   },
-};
+}
 
 async function handleFetchEvent(request, env, ctx) {
   let response

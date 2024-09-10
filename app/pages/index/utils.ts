@@ -1,5 +1,5 @@
 
-export { getImageBase64FromUrl, resizeBase64Image }
+export { getImageBase64FromUrl, resizeBase64Image, convertStreamToArrayBuffer }
 
 async function getImageBase64FromUrl(img) {
   const response = await fetch(`/api/images/?url=${img.url}`)
@@ -43,4 +43,32 @@ function resizeBase64Image(base64String, newWidth, newHeight) {
 
     img.src = base64String
   })
+}
+
+async function convertStreamToArrayBuffer(stream) {
+  const reader = stream.getReader();
+  const chunks = [];
+  let totalLength = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      chunks.push(value);
+      totalLength += value.length;
+    }
+
+    const arrayBuffer = new Uint8Array(totalLength);
+    let position = 0;
+
+    for (const chunk of chunks) {
+      arrayBuffer.set(chunk, position);
+      position += chunk.length;
+    }
+
+    return arrayBuffer.buffer;
+  } catch (error) {
+    console.error('Error while reading the stream:', error);
+  }
 }
