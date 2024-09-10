@@ -36,6 +36,7 @@ onUnmounted(() => {
     <a class="navitem" @click="selected = 2">Previous</a>
   </div>
   <div class="content">
+    <h2>Neonpunk Generative Art Mural</h2>
     <Today v-if="selected == 0" :user="user"/>
     <Prompt v-else-if="selected == 1" :user="user"/>
     <Previous v-else-if="selected == 2" :user="user" :canvasClient="canvasClient"/>
