@@ -1,3 +1,5 @@
+import { resizeBase64Image } from "./utils"
+
 export function useCreateToken() {
   async function createToken(createTokenData, creatorWallet) {
     const data = { ...createTokenData, creatorWallet }

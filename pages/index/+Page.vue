@@ -7,7 +7,7 @@ import Previous from './Previous.vue';
 
 const selected = ref(0)
 const canvasClient = ref()
-const user = ref()
+const user = ref({})
 
 async function start() {
   canvasClient.value = new CanvasClient()
@@ -37,9 +37,9 @@ onUnmounted(() => {
   </div>
   <div class="content">
     <h2>Neonpunk Generative Art Mural</h2>
-    <Today v-if="selected == 0" :user="user"/>
-    <Prompt v-else-if="selected == 1" :user="user"/>
-    <Previous v-else-if="selected == 2" :user="user" :canvasClient="canvasClient"/>
+    <Today v-if="selected == 0" :user="user.username"/>
+    <Prompt v-else-if="selected == 1" :user="user.username"/>
+    <Previous v-else-if="selected == 2" :user="user.username" :canvasClient="canvasClient"/>
   </div>
 </template>
 

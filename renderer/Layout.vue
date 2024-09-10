@@ -46,6 +46,16 @@ button:hover {
   border-color: #646cff;
 }
 
+img {
+  will-change: filter;
+  transition: filter 300ms;
+  padding: 5px;
+  width: 100%;
+}
+img:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
 .loader {
   width: 48px;
   height: 48px;

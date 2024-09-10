@@ -20,8 +20,8 @@ onMounted(async () => {
   loading.value = false
 })
 
-async function vote(url) {
-  voting.value = true
+async function vote(url, index) {
+  voting.value = index
   const response = await fetch(`/api/like`, {
     method: 'POST',
     body: JSON.stringify({url, user: user.username}),
@@ -39,10 +39,13 @@ async function vote(url) {
 <template>
   <h4>Today's Theme: {{theme}}</h4>
 
-  <div style="display: flex; flex-wrap: wrap;justify-content: center;padding-left: 10px;">
-    <div class="img-container" v-for="img in imgs">
+  <div class="wrapper">
+    <div v-for="(img, index) in imgs" class="img-container">
       <img :src="img.src" />
-      <button v-if="!loading && shouldVote && !voting" @click="vote(img.url)">vote ♡</button>
+      <button v-if="!loading && shouldVote" @click="vote(img.url, index)" :disabled="voting">
+        <span v-if="voting" class="loader small"></span>
+        <span v-else>vote ♡</span>
+      </button>
     </div>
   </div>
   <p v-if="loading">Loading...</p>
@@ -50,33 +53,13 @@ async function vote(url) {
 </template>
 
 <style scoped>
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-left: 10px;
+}
 .img-container {
   width: 33.333%;
 }
-img {
-  will-change: filter;
-  transition: filter 300ms;
-  padding: 5px;
-  width: 100%;
-}
-img:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-button {
-  border-radius: 8px;
-  border: 1px solid #444;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-  color: rgba(255, 255, 255, 0.87);
-  position: relative;
-}
-button:hover {
-  border-color: #646cff;
-}
 </style>
-

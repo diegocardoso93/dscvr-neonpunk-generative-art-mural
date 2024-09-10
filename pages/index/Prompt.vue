@@ -19,7 +19,7 @@ async function send() {
   loading.value = true
   const response = await fetch(`/api/generate`, {
     method: 'POST',
-    body: JSON.stringify({prompt: prompt.value, user: user.username}),
+    body: JSON.stringify({prompt: prompt.value, user}),
     headers: {'Content-Type': 'application/json'}
   })
   const json = await response.json();
@@ -36,10 +36,13 @@ async function send() {
   <h4>Today's Theme: {{ theme }}</h4>
   <p>Enter your prompt to generate and pin your image to the mural :)</p>
 
-  <div style="display: flex;margin: 10px 0;">
+  <div class="prompt">
     <h4 class="prompt-title">prompt: </h4>
     <input v-model="prompt" id="prompt" type="text" placeholder="... your awesome prompt here">
-    <button v-if="!loading" type="button" @click="send()">send</button>
+    <button type="button" @click="send()" :disabled="loading">
+      <span v-if="loading" class="loader small"></span>
+      <span v-else>send</span>
+    </button>
   </div>
 
   <div style="color: #4f46e5">
@@ -59,27 +62,13 @@ input {
   color: white;
   padding: 10px;
 }
-.initial {
-  padding: 10px 0 0 10px;
+.prompt {
+  display: flex;
+  margin: 10px 0;
 }
 .prompt-title {
   margin: 8px 0 0 8px;
   font-size: 14px;
-}
-button {
-  border-radius: 8px;
-  border: 1px solid #444;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-  color: rgba(255, 255, 255, 0.87);
-}
-button:hover {
-  border-color: #646cff;
 }
 img {
   max-width: 300px;
