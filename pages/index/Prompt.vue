@@ -3,9 +3,9 @@ import { ref } from 'vue';
 import { useData } from '../../renderer/useData';
 import { getImageBase64FromUrl } from './utils';
 
-const theme = useData()
-const prompt = ref('')
 const { user } = defineProps(['user'])
+const { theme } = useData()
+const prompt = ref('')
 const message = ref()
 const loading = ref()
 const imgGenerated = ref()
@@ -33,7 +33,6 @@ async function send() {
 </script>
 
 <template>
-  <h2>Neonpunk Generative Art Mural</h2>
   <h4>Today's Theme: {{ theme }}</h4>
   <p>Enter your prompt to generate and pin your image to the mural :)</p>
 
