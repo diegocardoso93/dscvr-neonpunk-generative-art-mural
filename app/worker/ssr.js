@@ -1,6 +1,6 @@
-import { renderPage } from 'vike/server'
-
 export { handleSsr }
+
+import { renderPage } from 'vike/server'
 
 async function handleSsr(url, env) {
   const pageContextInit = {

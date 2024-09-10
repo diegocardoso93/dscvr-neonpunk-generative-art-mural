@@ -1,6 +1,8 @@
+export { useCreateToken }
+
 import { resizeBase64Image } from "./utils"
 
-export function useCreateToken() {
+function useCreateToken() {
   async function createToken(createTokenData, creatorWallet) {
     const data = { ...createTokenData, creatorWallet }
     let metadataResults = await uploadData(data)
@@ -8,8 +10,7 @@ export function useCreateToken() {
   }
 
   async function uploadData(createData) {
-    const resized = await resizeBase64Image(createData.src, 100, 100)
-    createData.src = resized
+    createData.src = await resizeBase64Image(createData.src, 100, 100)
     const response = await fetch(`/api/mint`, {
       method: "post",
       body: JSON.stringify(createData),

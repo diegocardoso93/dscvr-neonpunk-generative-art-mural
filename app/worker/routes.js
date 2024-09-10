@@ -30,50 +30,40 @@ async function generateImage({ request, env }) {
   console.log(prompt, user)
 
   const todayDate = new Date().toLocaleDateString()
-  const imgs = JSON.parse(await env.DB.get(todayDate) || '[]')
+  const todayImages = JSON.parse(await env.DB.get(todayDate) || '[]')
 
-  if (imgs.some(img => img.user === user)) {
+  if (todayImages.some(img => img.user === user)) {
     return new Response(
       JSON.stringify({ message: 'You already created an image today!' }),
       { headers: { 'Content-Type': 'application/json' } }
     )
   }
 
-  const response = await env.IMG_AI.fetch(
-    `https://dscvr-canvas-img-gen.cloudflareai.workers.dev/?m=generate&p=${encodeURIComponent(prompt)}&u=${encodeURIComponent(user)}`
+  const response = await env.AI.run(
+    '@cf/bytedance/stable-diffusion-xl-lightning',
+    { prompt: `Neonpunk style, ${prompt}`, negative_prompt: 'text, word' }
   )
-  const imageRecord = await response.json()
-  console.log(imageRecord)
 
+  const form = new FormData()
+  form.append('image', new Blob([await convertStreamToArrayBuffer(response)]))
 
-  // const response = await env.AI.run(
-  //   '@cf/bytedance/stable-diffusion-xl-lightning',
-  //   { prompt: `Neonpunk style, ${prompt}`, negative_prompt: 'text, word' }
-  // )
+  const uploadResponse = await fetch(`https://api.imgbb.com/1/upload?expiration=0&key=${env.IMGBB_API_KEY}`, {
+    method: 'POST',
+    body: form
+  })
+  const responseJson = await uploadResponse.json()
 
-  // const form = new FormData()
-  // form.append('image', new Blob([await convertStreamToArrayBuffer(response)]))
+  const imageRecord = {
+    url: responseJson.data.url,
+    likes: [],
+    user,
+    prompt,
+    theme: await env.DB.get('_TODAYS_THEME'),
+    timestamp: Date.now()
+  }
 
-  // const uploadResponse = await fetch(`https://api.imgbb.com/1/upload?expiration=0&key=${env.IMGBB_API_KEY}`, {
-  //   method: 'POST',
-  //   body: form
-  // })
-  // const responseJson = await uploadResponse.json()
-
-  // const todayDate = new Date().toLocaleDateString()
-  // const todayImages = JSON.parse(await env.DB.get(todayDate) || '[]')
-  // const imageRecord = {
-  //   url: responseJson.data.url,
-  //   likes: [],
-  //   user,
-  //   prompt,
-  //   theme: await env.DB.get('_TODAYS_THEME'),
-  //   timestamp: Date.now()
-  // }
-
-  // todayImages.push(imageRecord)
-  // await env.DB.put(todayDate, JSON.stringify(todayImages))
-
+  todayImages.push(imageRecord)
+  await env.DB.put(todayDate, JSON.stringify(todayImages))
 
   return new JsonResponse({ message: 'Success!', reg: imageRecord })
 }

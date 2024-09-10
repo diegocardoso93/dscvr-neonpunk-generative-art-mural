@@ -1,7 +1,6 @@
-import { imageUrlToBlob } from './utils'
-import { routes } from './routes'
-
 export { handleServerRequest }
+
+import { routes } from './routes'
 
 async function handleServerRequest(request, env) {
   return await handleRoutes(routes, request, env)

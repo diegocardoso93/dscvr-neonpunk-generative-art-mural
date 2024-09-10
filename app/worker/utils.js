@@ -1,6 +1,8 @@
+export { imageUrlToBlob, base64toBuffer }
+
 import { Buffer } from 'node:buffer'
 
-export async function imageUrlToBlob(imageUrl) {
+async function imageUrlToBlob(imageUrl) {
   try {
     const response = await fetch(imageUrl)
     if (!response.ok) {
@@ -13,7 +15,7 @@ export async function imageUrlToBlob(imageUrl) {
   }
 }
 
-export function base64toBuffer(base64Image) {
+function base64toBuffer(base64Image) {
   const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '')
   return Buffer.from(base64Data, 'base64')
 }
