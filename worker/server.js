@@ -1,6 +1,8 @@
 import { imageUrlToBlob } from './utils'
 import { routes } from './routes'
 
+export { handleServerRequest }
+
 async function handleServerRequest(request, env) {
   return await handleRoutes(routes, request, env)
 }
@@ -13,5 +15,3 @@ async function handleRoutes(routes, request, env) {
   }
   return new Response()
 }
-
-export { handleServerRequest }
