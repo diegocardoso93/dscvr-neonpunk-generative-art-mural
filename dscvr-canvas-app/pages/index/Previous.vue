@@ -22,9 +22,9 @@ onMounted(async () => {
   for (let [idx, img] of Object.entries(imgs.value)) {
     imgs.value[idx].src = await getImageBase64FromUrl(img.winner)
   }
-  shouldMint.value = imgs.value.filter(img => 
-    img.winner.likes.includes(user) &&
-    !img.claimed.includes(user)
+  shouldMint.value = imgs.value.filter(img =>
+    !img.claimed.includes(user) && // not claimed yet 
+    (img.winner.likes.includes(user) || img.winner.user == user) // user likes or is the creator
   ).map((img, i) => i)
   loading.value = false
 })

@@ -4,6 +4,7 @@ An embedded app built to DSCVR, powered by DSCVR Canvas and Metaplex.
 Other tools:
 - Vite, Vike, Vue
 - Cloudflare Pages, Workers, AI, KV
+- ImgBB to host images
 
 ## How it works
 - **Daily Theme:** Each day, we select a new theme for our mural, which could be a person, object, or place.  

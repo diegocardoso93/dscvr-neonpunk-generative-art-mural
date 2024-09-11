@@ -31,7 +31,7 @@ app.post("/mint", async (req, res) => {
   console.log(req.body)
   const assetData = req.body
 
-  if (req.headers['interaction-key'] == process.env.MINTER_INTERACTION_KEY) {
+  if (req.headers['X-Auth-Key'] == process.env.ADMIN_SERVICE_KEY) {
     const assetAddress = generateSigner(umi)
     await create(umi, {
       ...assetData,
