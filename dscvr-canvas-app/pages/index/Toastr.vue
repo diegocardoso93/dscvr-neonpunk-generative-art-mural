@@ -17,6 +17,10 @@ const { title, message } = defineProps(['title', 'message'])
   height: calc(100vh - 100px);
   width: calc(100vw - 100px);
   padding: 50px;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
 }
 .content {
   text-align: center;

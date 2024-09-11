@@ -60,8 +60,6 @@ img:hover {
   width: 48px;
   height: 48px;
   border: 5px solid rgba(255, 255, 255, 0.87);
-  border-bottom-color: #646cff;
-  border-radius: 50%;
   display: inline-block;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
@@ -71,7 +69,7 @@ img:hover {
   height: 24px;
 }
 .loader.xsmall {
-  border: 3px solid #FFF;
+  border: 3px solid rgba(255, 255, 255, 0.87);
   width: 16px;
   height: 16px;
 }

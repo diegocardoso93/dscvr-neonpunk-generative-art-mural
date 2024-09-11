@@ -30,7 +30,7 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
           <!-- Indicates that the application is a Canvas -->
           <meta name="dscvr:canvas:version" content="vNext">
           <!-- Open Graph Image for previewing the Canvas -->
-          <meta name="og:image" content="https://i.ibb.co/YPrN9vS/1.png">
+          <meta name="og:image" content="https://i.ibb.co/mChJXmT/image.png">
           <title>Neonpunk Generative Art Mural</title>
         </head>
       <body>
