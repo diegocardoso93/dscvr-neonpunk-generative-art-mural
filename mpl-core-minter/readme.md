@@ -1,6 +1,6 @@
 ## mpl-core-minter
 
-Install dependencies
+Install dependencies:
 ```bash
 npm install
 ```

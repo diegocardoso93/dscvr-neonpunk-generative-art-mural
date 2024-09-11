@@ -1,6 +1,6 @@
 ## dscvr-canvas-app
 
-Install dependencies
+Install dependencies:
 ```bash
 npm install
 ```
