@@ -19,7 +19,7 @@ async function send() {
   loading.value = true
   const response = await fetch(`/api/generate`, {
     method: 'POST',
-    body: JSON.stringify({prompt: prompt.value, user: 'usertest1'}),
+    body: JSON.stringify({prompt: prompt.value, user}),
     headers: {'Content-Type': 'application/json'}
   })
   const json = await response.json();

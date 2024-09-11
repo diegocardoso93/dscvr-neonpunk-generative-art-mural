@@ -2,12 +2,10 @@
   "name": "mpl-core-minter",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc -p ."
+    "start": "node index.js"
   },
   "license": "MIT",
   "dependencies": {

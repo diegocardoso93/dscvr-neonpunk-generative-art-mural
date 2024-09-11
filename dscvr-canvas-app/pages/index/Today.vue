@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useData } from '../../renderer/useData';
 import { getImageBase64FromUrl } from './utils';
-import { Toastr } from './Toastr'
+import Toastr from './Toastr.vue'
 
 const { user } = defineProps(['user'])
 const theme = useData()

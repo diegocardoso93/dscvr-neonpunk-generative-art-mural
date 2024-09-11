@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { getImageBase64FromUrl } from './utils'
 import { useCreateToken } from './composables'
+import Toastr from './Toastr.vue'
 
 // Mainnet Beta: 101 | Testnet: 102 | Devnet: 103
 const CHAIN_ID = "solana:103"
@@ -25,7 +26,7 @@ onMounted(async () => {
   shouldMint.value = imgs.value.filter(img =>
     !img.claimed.includes(user) && // not claimed yet 
     (img.winner.likes.includes(user) || img.winner.user == user) // user likes or is the creator
-  ).map((img, i) => i)
+  ).map(img => img.date)
   loading.value = false
 })
 
@@ -49,7 +50,7 @@ async function mint(formData, index) {
     headers: {'Content-Type': 'application/json'}
   })
 
-  shouldMint.value = shouldMint.value.filter((x, i) => i != index)
+  shouldMint.value = shouldMint.value.filter(x => x.date != formData.date)
   loadingMint.value = false
   showCelebration.value = true
   setTimeout(() => {
@@ -68,7 +69,7 @@ async function mint(formData, index) {
       <div>date: {{ img.date }}</div>
       <div>prompt: {{ img.winner.prompt }}</div>
       <div>user: {{ img.winner.user }}</div>
-      <button v-if="shouldMint.includes(index)" @click="mint(img, index)">
+      <button v-if="shouldMint.includes(img.date)" @click="mint(img, index)">
         <span class="loader xsmall" v-if="loadingMint === index"></span>
         <template v-else>mint NFT ♡</template>
       </button>

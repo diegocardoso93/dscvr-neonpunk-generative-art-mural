@@ -111,7 +111,7 @@ async function mint({ request, env }) {
     body: JSON.stringify(postData),
     headers: {
       'Content-Type': 'application/json',
-      'X-Auth-Key': env.ADMIN_SERVICE_KEY
+      'x-auth-key': env.ADMIN_SERVICE_KEY
     }
   })
   const json = await response.json()
@@ -133,11 +133,11 @@ async function saveClaimed({ request, env }) {
 }
 
 // Finalize the day's images and determine the winner
-async function finish({ env }) {
+async function finish({ request, env }) {
   const input = await request.json()
   const date = input.date
 
-  if (!date || request.headers.get('X-Auth-Key') != env.ADMIN_SERVICE_KEY) {
+  if (!date || request.headers.get('x-auth-key') != env.ADMIN_SERVICE_KEY) {
     return new JsonResponse({ message: 'Invalid request.' })
   }
   const finished = JSON.parse(await env.DB.get('_FINISHED') || '[]')
@@ -164,11 +164,11 @@ async function finish({ env }) {
 }
 
 // Change today's theme
-async function changeTheme({ request }) {
+async function changeTheme({ request, env }) {
   const input = await request.json()
   const subject = input.subject
 
-  if (!subject || request.headers.get('X-Auth-Key') != env.ADMIN_SERVICE_KEY) {
+  if (!subject || request.headers.get('x-auth-key') != env.ADMIN_SERVICE_KEY) {
     return new JsonResponse({ message: 'Invalid request.' })
   }
   await env.DB.put('_TODAYS_THEME', subject)

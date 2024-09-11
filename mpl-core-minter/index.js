@@ -28,10 +28,10 @@ app.get("/", (req, res) => {
 
 // Create an asset with provided name, uri and owner
 app.post("/mint", async (req, res) => {
-  console.log(req.body)
+  console.log(req.body, req.headers)
   const assetData = req.body
 
-  if (req.headers['X-Auth-Key'] == process.env.ADMIN_SERVICE_KEY) {
+  if (req.headers['x-auth-key'] == process.env.ADMIN_SERVICE_KEY) {
     const assetAddress = generateSigner(umi)
     await create(umi, {
       ...assetData,

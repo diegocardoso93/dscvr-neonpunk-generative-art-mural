@@ -1,10 +1,10 @@
 
 curl -X POST https://api-url.example.com/api/finish \
      -H "Content-Type: application/json" \
-     -H "X-Auth-Key: your-auth-key" \
+     -H "x-auth-key: your-auth-key" \
      -d '{"date": "9/9/2024"}'
 
 curl -X POST https://api-url.example.com/api/theme \
      -H "Content-Type: application/json" \
-     -H "X-Auth-Key: your-auth-key" \
+     -H "x-auth-key: your-auth-key" \
      -d '{"subject": "Cat"}'
