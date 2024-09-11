@@ -1,4 +1,4 @@
-# Neonpunk Generative Art Mural
+# DSCVR Neonpunk Generative Art Mural
 An embedded app built to DSCVR, powered by DSCVR Canvas and Metaplex.
 
 Other tools:
