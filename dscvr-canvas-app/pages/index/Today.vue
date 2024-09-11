@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useData } from '../../renderer/useData';
 import { getImageBase64FromUrl } from './utils';
+import { Toastr } from './Toastr'
 
 const { user } = defineProps(['user'])
 const theme = useData()
@@ -9,6 +10,7 @@ let imgs = ref()
 const loading = ref(true)
 const shouldVote = ref()
 const voting = ref()
+const showLikeFeedback = ref()
 
 onMounted(async () => {
   const response = await fetch('/api/images');
@@ -31,6 +33,10 @@ async function vote(url, index) {
   console.log(json)
   if (json.ok) {
     shouldVote.value = false
+    showLikeFeedback.value = true
+    setTimeout(() => {
+      showLikeFeedback.value = false
+    }, 5000)
   }
   voting.value = false
 }
@@ -50,6 +56,12 @@ async function vote(url, index) {
   </div>
   <p v-if="loading">Loading...</p>
   <p v-else-if="!imgs.length">Nothing to show yet...</p>
+
+  <Toastr 
+    v-if="showLikeFeedback"
+    title="Thank you!! 🎉🎊"
+    message="Be sure to come back tomorrow and check the 'Previous' tab to see if you voted for the winner and to redeem your NFT! ♡"
+  />
 </template>
 
 <style scoped>

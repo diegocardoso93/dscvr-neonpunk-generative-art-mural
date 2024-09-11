@@ -13,7 +13,7 @@ const imgGenerated = ref()
 async function send() {
   if (!prompt.value.toLocaleLowerCase().includes(theme.value.toLocaleLowerCase())) {
     message.value = `Your prompt needs to have today's theme: ${theme.value}`
-    setTimeout(() => message.value = '', 5000)
+    setTimeout(() => message.value = '', 4000)
     return
   }
   loading.value = true

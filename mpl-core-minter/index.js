@@ -1,81 +1,59 @@
-import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
-import { create, fetchAssetV1, mplCore } from '@metaplex-foundation/mpl-core';
-import { generateSigner, keypairIdentity, } from '@metaplex-foundation/umi';
-import { base58 } from '@metaplex-foundation/umi/serializers';
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import { create, fetchAssetV1, mplCore } from '@metaplex-foundation/mpl-core'
+import { generateSigner, keypairIdentity, } from '@metaplex-foundation/umi'
+import { base58 } from '@metaplex-foundation/umi/serializers'
+import express from "express"
+import dotenv from "dotenv"
 
-const umi = createUmi('https://api.devnet.solana.com', 'processed')
-const keypair = umi.eddsa.createKeypairFromSecretKey(base58.serialize('53yN1EpMLxMVz1n8PSV2mvrWiW7TRzDFLQH46FarYDj3JtchvqZTKz1y57nJJy4A6hoskyghC8EmuzWt3K9RYmKH'))
+dotenv.config()
+
+const app = express()
+const port = process.env.PORT || 5173
+
+// Middleware
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+// Configure Umi
+const umi = createUmi(process.env.SOLANA_RPC_URL || '', 'processed')
+const keypair = umi.eddsa.createKeypairFromSecretKey(base58.serialize(process.env.PAYER_WALLET_PRIVATE_KEY || ''))
 umi.use(keypairIdentity(keypair))
 umi.use(mplCore())
 
-// Create an asset
-const assetAddress = generateSigner(umi);
-const owner = generateSigner(umi);
-await create(umi, {
-  name: 'Neonpunk - Cat',
-  uri: "https://dscvr-canvas.cloudflareai.workers.dev/api/metadata992024",
-  asset: assetAddress,
-  owner: owner.publicKey, // optional, will default to payer
-}).sendAndConfirm(umi);
+// Index
+app.get("/", (req, res) => {
+  console.log("GET /")
+  res.send("mpl-core-minter")
+})
 
-// Fetch an asset
-const asset = await fetchAssetV1(umi, assetAddress.publicKey);
+// Create an asset with provided name, uri and owner
+app.post("/mint", async (req, res) => {
+  console.log(req.body)
+  const assetData = req.body
 
-console.log({assetAddress, owner, asset})
+  if (req.headers['interaction-key'] == process.env.MINTER_INTERACTION_KEY) {
+    const assetAddress = generateSigner(umi)
+    await create(umi, {
+      ...assetData,
+      asset: assetAddress
+    }).sendAndConfirm(umi)
 
+    const asset = await fetchAssetV1(umi, assetAddress.publicKey)
+    return res.send({ success: true, asset })
+  }
 
-// // Create a collection
-// const collectionUpdateAuthority = generateSigner(umi);
-// const collectionAddress = generateSigner(umi);
-// await createCollection(umi, {
-//   name: 'Test Collection',
-//   uri: 'https://example.com/collection.json',
-//   collection: collectionAddress,
-//   updateAuthority: collectionUpdateAuthority.publicKey, // optional, defaults to payer
-// }).sendAndConfirm(umi);
+  return res.send({ success: false })
+})
 
-// // Fetch a collection
-// const collection = await fetchCollection(umi, collectionAddress.publicKey);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  res.status(500).send("Something broke!")
+})
 
-// // Create an asset in a collection, the authority must be the updateAuthority of the collection
-// await create(umi, {
-//   name: 'Test Asset',
-//   uri: 'https://example.com/asset.json',
-//   asset: assetAddress,
-//   collection,
-//   authority: collectionUpdateAuthority, // optional, defaults to payer
-// }).sendAndConfirm(umi);
+// Start server
+app.listen(port, () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
+})
 
-// // Transfer an asset
-// const recipient = generateSigner(umi);
-// await transfer(umi, {
-//   asset,
-//   newOwner: recipient.publicKey,
-// }).sendAndConfirm(umi);
-
-// // Transfer an asset in a collection
-// await transfer(umi, {
-//   asset,
-//   newOwner: recipient.publicKey,
-//   collection,
-// }).sendAndConfirm(umi);
-
-// // GPA fetch assets by owner
-// const assetsByOwner = await getAssetV1GpaBuilder(umi)
-//   .whereField('key', Key.AssetV1)
-//   .whereField('owner', owner.publicKey)
-//   .getDeserialized();
-
-// // GPA fetch assets by collection
-// const assetsByCollection = await getAssetV1GpaBuilder(umi)
-//   .whereField('key', Key.AssetV1)
-//   .whereField(
-//     'updateAuthority',
-//     updateAuthority('Collection', [collectionAddress.publicKey])
-//   )
-//   .getDeserialized();
-
-// console.log({assetAddress, owner, asset, collectionUpdateAuthority, collectionAddress, recipient, collection, assetsByOwner, assetsByCollection})
-
-// DAS API (RPC based indexing) fetch assets by owner/collection
-// Coming soon
+export default app

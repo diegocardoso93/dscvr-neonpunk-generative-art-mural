@@ -11,8 +11,9 @@ const { createToken } = useCreateToken()
 
 let imgs = ref()
 const loading = ref(true)
-const shouldMint = ref()
+const shouldMint = ref([])
 const loadingMint = ref()
+const showCelebration = ref()
 
 onMounted(async () => {
   loading.value = true
@@ -21,10 +22,10 @@ onMounted(async () => {
   for (let [idx, img] of Object.entries(imgs.value)) {
     imgs.value[idx].src = await getImageBase64FromUrl(img.winner)
   }
-  shouldMint.value = imgs.value.some(img => 
+  shouldMint.value = imgs.value.filter(img => 
     img.winner.likes.includes(user) &&
     !img.claimed.includes(user)
-  )
+  ).map((img, i) => i)
   loading.value = false
 })
 
@@ -39,15 +40,21 @@ async function mint(formData, index) {
     return
   }
 
+  formData.address = response.untrusted.address;
+  formData.user = user;
+
   const mintResult = await fetch(`/api/mint`, {
     method: "post",
     body: JSON.stringify(formData),
     headers: {'Content-Type': 'application/json'}
   })
 
-  // return await response.json()
-
+  shouldMint.value = shouldMint.value.filter((x, i) => i != index)
   loadingMint.value = false
+  showCelebration.value = true
+  setTimeout(() => {
+    showCelebration.value = false
+  }, 5000);
 }
 </script>
 
@@ -61,7 +68,7 @@ async function mint(formData, index) {
       <div>date: {{ img.date }}</div>
       <div>prompt: {{ img.winner.prompt }}</div>
       <div>user: {{ img.winner.user }}</div>
-      <button v-if="shouldMint" @click="mint(img, index)">
+      <button v-if="shouldMint.includes(index)" @click="mint(img, index)">
         <span class="loader xsmall" v-if="loadingMint === index"></span>
         <template v-else>mint NFT ♡</template>
       </button>
@@ -69,6 +76,12 @@ async function mint(formData, index) {
   </div>
   <p v-if="loading">Loading...</p>
   <p v-else-if="!imgs.length">Nothing to show yet...</p>
+
+  <Toastr
+    v-if="showCelebration"
+    title="Congratulations!! 🎉🎊"
+    message="You received the asset in your Wallet"
+  />
 </template>
 
 <style scoped>

@@ -20,4 +20,5 @@ binding = "AI"
 
 [vars]
 IMGBB_API_KEY = ""
-MINT_SERVICE_HOST = ""
+MINTER_SERVICE_HOST = ""
+MINTER_INTERACTION_KEY = ""

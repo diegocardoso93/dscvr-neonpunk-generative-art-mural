@@ -8,11 +8,11 @@ export const routes = {
   '/generate': generateImage,
   '/like': like,
   '/previous': previousList,
-  '/finish': finish,
   '/mint': mint,
   '/claimed': saveClaimed,
+  '/finish': finish,
+  '/theme': changeTheme,
   '/metadata': metadata,
-  '/mint': mplCoreMint
 }
 
 // Convert image URL to Blob
@@ -96,11 +96,54 @@ async function previousList({ env }) {
   return new JsonResponse(finished)
 }
 
-// Finalize the day's images and determine the winner
-async function finish({ env }) {
+// Mint a new resource
+async function mint({ request, env }) {
+  const input = await request.json()
+
+  const postData = {
+    name: `Neonpunk - ${input.winner.theme}`,
+    uri: `${new URL(request.url).origin}/api/metadata${input.date.replaceAll('/', '')}`,
+    owner: input.address,
+  }
+
+  const response = await fetch(`${env.MINTER_SERVICE_HOST}/mint`, {
+    method: 'POST',
+    body: JSON.stringify(postData),
+    headers: {
+      'Content-Type': 'application/json',
+      'interaction-key': env.MINTER_INTERACTION_KEY
+    }
+  })
+  const json = await response.json()
+  await saveClaimed({ request, env })
+
+  return new JsonResponse(json)
+}
+
+// Save user claimed state
+async function saveClaimed({ request, env }) {
+  const input = await request.json()
   const finished = JSON.parse(await env.DB.get('_FINISHED') || '[]')
-  const todayDate = new Date().toLocaleDateString()
-  const imgs = JSON.parse(await env.DB.get(todayDate) || '[]')
+  const index = finished.findIndex(({ date }) => date === input.date)
+  if (index > -1) {
+    finished[index].claimed.push(input.user)
+  }
+  await env.DB.put('_FINISHED', JSON.stringify(finished))
+  return new JsonResponse({ message: 'Success!', finished })
+}
+
+// Finalize the day's images and determine the winner
+// @todo: restrict the access
+async function finish({ env }) {
+  const date = new URL(request.url).searchParams.get('date')
+  if (!date) {
+    return new JsonResponse({ message: 'Invalid request.' })
+  }
+  const finished = JSON.parse(await env.DB.get('_FINISHED') || '[]')
+  const imgs = JSON.parse(await env.DB.get(date) || '[]')
+  if (!imgs.length) {
+    return new JsonResponse({ message: 'No creations available for this date.' })
+  }
 
   imgs.sort((a, b) => {
     const alikes = a.likes.length
@@ -113,42 +156,30 @@ async function finish({ env }) {
   })
 
   const winner = imgs[0]
-  finished.push({ date: todayDate, winner, claimed: [] })
+  finished.push({ date, winner, claimed: [] })
   await env.DB.put('_FINISHED', JSON.stringify(finished))
 
   return new JsonResponse({ message: 'Success!', finished })
 }
 
-// Mint a new resource
-async function mint({ request, env }) {
-  const input = await request.json()
-  const response = await fetch(`${env.MINT_SERVICE_HOST}/mint`, {
-    method: 'POST',
-    body: JSON.stringify(input),
-    headers: { 'Content-Type': 'application/json' }
-  })
-  const json = await response.json()
-  await saveClaimed({ request, env })
-  return new JsonResponse(json)
-}
-
-// Save user claimed NFT info
-async function saveClaimed({ request, env }) {
-  const input = await request.json()
-  const finished = JSON.parse(await env.DB.get('_FINISHED') || '[]')
-  const index = finished.findIndex(({ date }) => date === input.date)
-  if (index > -1) {
-    finished[index].claimed.push(input.user)
+// Change today's theme
+// @todo: restrict the access
+async function changeTheme({ request }) {
+  const subject = new URL(request.url).searchParams.get('subject')
+  if (!subject) {
+    return new JsonResponse({ message: 'Invalid request.' })
   }
-  await env.DB.put('_FINISHED', JSON.stringify(finished))
-  return new JsonResponse({ message: 'Success!', finished })
+  await env.DB.put('_TODAYS_THEME', subject)
+
+  return new JsonResponse({ success: true })
 }
 
+// Get asset metadata
 async function metadata({ request, env }) {
-  const dt = request.url.replace(/.*metadata/, '');
+  const dt = request.url.replace(/.*metadata/, '')
   const finished = JSON.parse(await env.DB.get('_FINISHED') || '[]')
   const reg = finished.find(({ date }) => date.replaceAll('/', '') === dt)
-  return new JsonResponse({
+  return new Response(JSON.stringify({
     name: `Neonpunk - ${reg.winner.theme}`,
     symbol: 'NEONPUNK',
     image: reg.winner.url,
@@ -157,19 +188,12 @@ async function metadata({ request, env }) {
     date: reg.date,
     user_created: reg.winner.user,
     user_dscvr: `https://dscvr.one/u/${reg.winner.user}`
-  })
+  }), { headers: {"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"} })
 }
 
 // Custom response class for JSON data
 class JsonResponse extends Response {
   constructor(data) {
-    super(JSON.stringify(data), {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Content-Type": "application/json"
-      }
-    })
+    super(JSON.stringify(data), { headers: { "Content-Type": "application/json" } })
   }
 }
