@@ -1,7 +1,4 @@
- - Vite
- - Vike
- - Vue
- - HTML streaming
+## dscvr-canvas-app
 
 Install dependencies
 ```bash
