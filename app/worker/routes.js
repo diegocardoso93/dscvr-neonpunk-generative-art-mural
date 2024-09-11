@@ -1,3 +1,6 @@
+
+import { imageUrlToBlob, convertStreamToArrayBuffer } from './utils'
+
 // Define routes mapping
 export const routes = {
   '?url': binaryImage,
@@ -8,6 +11,8 @@ export const routes = {
   '/finish': finish,
   '/mint': mint,
   '/claimed': saveClaimed,
+  '/metadata': metadata,
+  '/mint': mplCoreMint
 }
 
 // Convert image URL to Blob
@@ -122,8 +127,8 @@ async function mint({ request, env }) {
     body: JSON.stringify(input),
     headers: { 'Content-Type': 'application/json' }
   })
-
   const json = await response.json()
+  await saveClaimed({ request, env })
   return new JsonResponse(json)
 }
 
@@ -139,9 +144,32 @@ async function saveClaimed({ request, env }) {
   return new JsonResponse({ message: 'Success!', finished })
 }
 
+async function metadata({ request, env }) {
+  const dt = request.url.replace(/.*metadata/, '');
+  const finished = JSON.parse(await env.DB.get('_FINISHED') || '[]')
+  const reg = finished.find(({ date }) => date.replaceAll('/', '') === dt)
+  return new JsonResponse({
+    name: `Neonpunk - ${reg.winner.theme}`,
+    symbol: 'NEONPUNK',
+    image: reg.winner.url,
+    description: `Neonpunk Generative Art Mural reward date ${reg.date}.`,
+    prompt: reg.winner.prompt,
+    date: reg.date,
+    user_created: reg.winner.user,
+    user_dscvr: `https://dscvr.one/u/${reg.winner.user}`
+  })
+}
+
 // Custom response class for JSON data
 class JsonResponse extends Response {
   constructor(data) {
-    super(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } })
+    super(JSON.stringify(data), {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Content-Type": "application/json"
+      }
+    })
   }
 }

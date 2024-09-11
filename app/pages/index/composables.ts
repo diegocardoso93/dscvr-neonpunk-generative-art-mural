@@ -10,7 +10,6 @@ function useCreateToken() {
   }
 
   async function uploadData(createData) {
-    createData.src = await resizeBase64Image(createData.src, 100, 100)
     const response = await fetch(`/api/mint`, {
       method: "post",
       body: JSON.stringify(createData),

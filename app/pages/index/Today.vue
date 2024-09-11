@@ -4,7 +4,7 @@ import { useData } from '../../renderer/useData';
 import { getImageBase64FromUrl } from './utils';
 
 const { user } = defineProps(['user'])
-const { theme } = useData()
+const theme = useData()
 let imgs = ref()
 const loading = ref(true)
 const shouldVote = ref()
@@ -24,7 +24,7 @@ async function vote(url, index) {
   voting.value = index
   const response = await fetch(`/api/like`, {
     method: 'POST',
-    body: JSON.stringify({url, user: user.username}),
+    body: JSON.stringify({url, user}),
     headers: {'Content-Type': 'application/json'}
   })
   const json = await response.json();
@@ -43,7 +43,7 @@ async function vote(url, index) {
     <div v-for="(img, index) in imgs" class="img-container">
       <img :src="img.src" />
       <button v-if="!loading && shouldVote" @click="vote(img.url, index)" :disabled="voting">
-        <span v-if="voting" class="loader small"></span>
+        <span v-if="voting" class="loader xsmall"></span>
         <span v-else>vote ♡</span>
       </button>
     </div>

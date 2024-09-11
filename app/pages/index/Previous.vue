@@ -39,33 +39,14 @@ async function mint(formData, index) {
     return
   }
 
-  const createTokenResult = await createToken(formData, response.untrusted.address)
-  if (createTokenResult.success === false) {
-    loadingMint.value = false
-    console.log(createTokenResult.message)
-    return
-  }
-
-  const signedTxResults = await canvasClient.signAndSendTransaction({
-    chainId: CHAIN_ID,
-    unsignedTx: createTokenResult.transaction,
+  const mintResult = await fetch(`/api/mint`, {
+    method: "post",
+    body: JSON.stringify(formData),
+    headers: {'Content-Type': 'application/json'}
   })
-  console.log(signedTxResults)
 
-  if (signedTxResults.untrusted.success) {
-    signedTx.value = signedTxResults.untrusted.signedTx
-    console.log("Token created successfully!", signedTxResults.untrusted)
+  // return await response.json()
 
-    await fetch('/api/claimed', {
-      method: 'post',
-      body: JSON.stringify({date: formData.date, user}),
-      headers: {'Content-Type': 'application/json'}
-    })
-
-    shouldMint.value = false
-  } else if (signedTxResults.untrusted.success === false) {
-    console.error("Failed to create token", signedTxResults.untrusted.error)
-  }
   loadingMint.value = false
 }
 </script>
@@ -81,7 +62,7 @@ async function mint(formData, index) {
       <div>prompt: {{ img.winner.prompt }}</div>
       <div>user: {{ img.winner.user }}</div>
       <button v-if="shouldMint" @click="mint(img, index)">
-        <span class="loader small" v-if="loadingMint === index"></span>
+        <span class="loader xsmall" v-if="loadingMint === index"></span>
         <template v-else>mint NFT ♡</template>
       </button>
     </div>

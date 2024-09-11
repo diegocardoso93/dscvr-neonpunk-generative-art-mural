@@ -17,3 +17,7 @@ id = "60717b84316d4b8ea29cc43f956b7a3d"
 
 [ai]
 binding = "AI"
+
+[vars]
+IMGBB_API_KEY = ""
+MINT_SERVICE_HOST = ""

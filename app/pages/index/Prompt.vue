@@ -4,7 +4,7 @@ import { useData } from '../../renderer/useData';
 import { getImageBase64FromUrl } from './utils';
 
 const { user } = defineProps(['user'])
-const { theme } = useData()
+const theme = useData()
 const prompt = ref('')
 const message = ref()
 const loading = ref()
@@ -19,7 +19,7 @@ async function send() {
   loading.value = true
   const response = await fetch(`/api/generate`, {
     method: 'POST',
-    body: JSON.stringify({prompt: prompt.value, user}),
+    body: JSON.stringify({prompt: prompt.value, user: 'usertest1'}),
     headers: {'Content-Type': 'application/json'}
   })
   const json = await response.json();
@@ -40,7 +40,7 @@ async function send() {
     <h4 class="prompt-title">prompt: </h4>
     <input v-model="prompt" id="prompt" type="text" placeholder="... your awesome prompt here">
     <button type="button" @click="send()" :disabled="loading">
-      <span v-if="loading" class="loader small"></span>
+      <span v-if="loading" class="loader xsmall"></span>
       <span v-else>send</span>
     </button>
   </div>
