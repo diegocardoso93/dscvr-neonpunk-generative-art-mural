@@ -1,14 +1,12 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { getImageBase64FromUrl } from './utils'
-import { useCreateToken } from './composables'
 import Toastr from './Toastr.vue'
 
 // Mainnet Beta: 101 | Testnet: 102 | Devnet: 103
 const CHAIN_ID = "solana:103"
 
 const { user, canvasClient } = defineProps(['user', 'canvasClient'])
-const { createToken } = useCreateToken()
 
 let imgs = ref()
 const loading = ref(true)
@@ -50,7 +48,7 @@ async function mint(formData, index) {
     headers: {'Content-Type': 'application/json'}
   })
 
-  shouldMint.value = shouldMint.value.filter(x => x.date != formData.date)
+  shouldMint.value = shouldMint.value.filter(date => date != formData.date)
   loadingMint.value = false
   showCelebration.value = true
   setTimeout(() => {

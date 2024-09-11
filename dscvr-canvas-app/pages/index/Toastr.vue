@@ -12,12 +12,15 @@ const { title, message } = defineProps(['title', 'message'])
 </template>
 
 <style scoped>
+h2 {
+  margin: 10px 0;
+}
 .overlay {
-  background: rgba(0, 0, 0, 0.3);
-  height: calc(100vh - 100px);
-  width: calc(100vw - 100px);
+  background: #000000c7;
+  height: 100vh;
+  width: 100vw;
   padding: 50px;
-  position: absolute;
+  position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
@@ -27,8 +30,8 @@ const { title, message } = defineProps(['title', 'message'])
   width: 600px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.5);
+  background: #1c212e;
   margin: auto;
-  padding-bottom: 10px;
+  padding: 20px;
 }
 </style>

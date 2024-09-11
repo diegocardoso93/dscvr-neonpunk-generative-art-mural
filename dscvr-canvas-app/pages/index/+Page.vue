@@ -6,28 +6,25 @@ import Today from './Today.vue';
 import Previous from './Previous.vue';
 
 const selected = ref(0)
-const canvasClient
+const canvasClient = ref()
 const user = ref({})
-const resizeObserver = new ResizeObserver(() => canvasClient?.resize())
 
 async function start() {
-  if (!canvasClient) return
-  const response = await canvasClient.ready()
+  canvasClient.value = new CanvasClient()
+  if (!canvasClient.value) return
+  const response = await canvasClient.value.ready()
   if (response) {
     user.value = response.untrusted.user
   }
 }
 
 onMounted(async () => {
-  canvasClient = new CanvasClient()
-  resizeObserver.observe(document.body)
   await start()
 })
 
 onUnmounted(() => {
-  if (canvasClient) {
-    resizeObserver?.disconnect()
-    canvasClient.destroy()
+  if (canvasClient.value) {
+    canvasClient.value.destroy()
   }
 })
 </script>

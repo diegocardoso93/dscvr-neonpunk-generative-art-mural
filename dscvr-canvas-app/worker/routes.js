@@ -115,14 +115,13 @@ async function mint({ request, env }) {
     }
   })
   const json = await response.json()
-  await saveClaimed({ request, env })
+  await saveClaimed({ input, env })
 
   return new JsonResponse(json)
 }
 
 // Save user claimed state
-async function saveClaimed({ request, env }) {
-  const input = await request.json()
+async function saveClaimed({ input, env }) {
   const finished = JSON.parse(await env.DB.get('_FINISHED') || '[]')
   const index = finished.findIndex(({ date }) => date === input.date)
   if (index > -1) {
